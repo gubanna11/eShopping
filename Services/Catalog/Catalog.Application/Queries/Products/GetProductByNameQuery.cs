@@ -1,5 +1,4 @@
-﻿using Amazon.Runtime.Internal;
-using Catalog.Application.Responses;
+﻿using Catalog.Application.Responses;
 using MediatR;
 
 namespace Catalog.Application.Queries.Products;
