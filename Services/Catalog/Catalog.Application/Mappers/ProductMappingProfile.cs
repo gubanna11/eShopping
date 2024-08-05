@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Catalog.Application.Commands.Products;
 using Catalog.Application.Responses;
 using Catalog.Core.Entities;
 
@@ -15,6 +16,13 @@ public class ProductMappingProfile : Profile
             .ReverseMap();
 
         CreateMap<ProductType, TypeResponse>()
+            .ReverseMap();
+
+
+        CreateMap<Product, CreateProductCommand>()
+            .ReverseMap();
+
+        CreateMap<Product, UpdateProductCommand>()
             .ReverseMap();
     }
 }
