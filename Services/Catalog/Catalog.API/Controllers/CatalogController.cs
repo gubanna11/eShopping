@@ -5,7 +5,6 @@ using Catalog.Application.Queries.Types;
 using Catalog.Application.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
@@ -30,7 +29,7 @@ public class CatalogController : ApiController
         var query = new GetProductByIdQuery(id);
         var result = await _mediator.Send(query);
 
-        if(result is null)
+        if (result is null)
         {
             return NotFound();
         }
@@ -106,7 +105,7 @@ public class CatalogController : ApiController
     public async Task<ActionResult<ProductResponse>> CreateProduct([FromBody] CreateProductCommand productCommand)
     {
         var result = await _mediator.Send(productCommand);
-        
+
         return Ok(result);
     }
 
