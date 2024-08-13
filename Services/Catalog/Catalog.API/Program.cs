@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using Catalog.Application.Handlers.Brands;
-using Catalog.Application.Handlers.Products;
 using Catalog.Core.Repositories;
 using Catalog.Infrastructure.Data;
 using Catalog.Infrastructure.Repositories;
@@ -24,11 +23,11 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", 
-        new OpenApiInfo 
-        { 
+    c.SwaggerDoc("v1",
+        new OpenApiInfo
+        {
             Title = "Catalog",
-            Version = "v1" 
+            Version = "v1"
         });
 });
 
