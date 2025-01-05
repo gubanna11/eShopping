@@ -2,6 +2,7 @@
 using Catalog.Application.Commands.Products;
 using Catalog.Application.Responses;
 using Catalog.Core.Entities;
+using Catalog.Core.Specs;
 
 namespace Catalog.Application.Mappers;
 
@@ -11,18 +12,17 @@ public class ProductMappingProfile : Profile
     {
         CreateMap<ProductBrand, BrandResponse>()
             .ReverseMap();
-
         CreateMap<Product, ProductResponse>()
             .ReverseMap();
-
         CreateMap<ProductType, TypeResponse>()
             .ReverseMap();
 
-
         CreateMap<Product, CreateProductCommand>()
             .ReverseMap();
-
         CreateMap<Product, UpdateProductCommand>()
+            .ReverseMap();
+
+        CreateMap<Pagination<Product>, Pagination<ProductResponse>>()
             .ReverseMap();
     }
 }

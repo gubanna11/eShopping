@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Catalog.Core.Specs;
 
 namespace Catalog.API.Controllers;
 
@@ -67,10 +68,10 @@ public class CatalogController : ApiController
 
     [HttpGet]
     [Route("GetAllProducts")]
-    [ProducesResponseType(typeof(IList<ProductResponse>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<IList<ProductResponse>>> GetAllProducts()
+    [ProducesResponseType(typeof(Pagination<ProductResponse>), (int)HttpStatusCode.OK)]
+    public async Task<ActionResult<Pagination<ProductResponse>>> GetAllProducts([FromQuery]CatalogSpecParams catalogSpecParams)
     {
-        var query = new GetAllProductsQuery();
+        var query = new GetAllProductsQuery(catalogSpecParams);
         var result = await _mediator.Send(query);
 
         return Ok(result);
