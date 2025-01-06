@@ -1,11 +1,13 @@
-﻿using MongoDB.Bson;
+﻿using Catalog.Core.Entities;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
 
-namespace Catalog.Core.Entities;
+namespace Catalog.Application.Responses;
 
-public class Product : BaseEntity
+public class ProductResponse
 {
-    [BsonElement("Name")]
+    public string Id { get; set; }
+
     public string Name { get; set; }
 
     public string Summary { get; set; }
@@ -14,12 +16,9 @@ public class Product : BaseEntity
 
     public string ImageFile { get; set; }
 
-    protected internal string fieldd;
-
     public ProductBrand Brands { get; set; }
 
     public ProductType Types { get; set; }
 
-    [BsonRepresentation(BsonType.Decimal128)]
     public decimal Price { get; set; }
 }
