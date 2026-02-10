@@ -124,7 +124,7 @@ public class CatalogController : ApiController
     [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<bool>> DeleteProduct(string id)
     {
-        var query = new DeleteProductCommand(id);
+        var query = new DeleteProductByIdCommand(id);
         var result = await _mediator.Send(query);
 
         return Ok(result);

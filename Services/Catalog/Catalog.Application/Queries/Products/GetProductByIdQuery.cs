@@ -4,12 +4,6 @@ using MediatR;
 
 namespace Catalog.Application.Queries.Products;
 
-public class GetProductByIdQuery : IRequest<ProductResponse>
+public record GetProductByIdQuery(string Id) : IRequest<ProductResponse> 
 {
-    public string Id { get; set; }
-
-    public GetProductByIdQuery(string id)
-    {
-        Id = id;
-    }
 }

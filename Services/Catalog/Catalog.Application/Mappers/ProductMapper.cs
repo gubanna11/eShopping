@@ -1,19 +1,100 @@
-﻿using AutoMapper;
+using Catalog.Application.Commands;
+using Catalog.Application.Commands.Products;
+using Catalog.Application.DTOs;
+using Catalog.Application.DTOs.Product;
+using Catalog.Application.Responses;
+using Catalog.Core.Entities;
+using Catalog.Core.Specs;
 
-namespace Catalog.Application.Mappers;
-
-public static class ProductMapper
+namespace Catalog.Application.Mappers
 {
-    private static readonly Lazy<IMapper> Lazy = new Lazy<IMapper>(() =>
+    public static class ProductMapper
     {
-        var config = new MapperConfiguration(cfg =>
+        public static ProductResponse ToResponse(this Product product)
         {
-            cfg.ShouldMapProperty = p => p.GetMethod.IsPublic || p.GetMethod.IsAssembly;
-            cfg.AddProfile<ProductMappingProfile>();
-        });
-        var mapper = config.CreateMapper();
-        return mapper;
-    });
+            if (product == null) return null;
+            return new ProductResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Summary = product.Summary,
+                Description = product.Description,
+                ImageFile = product.ImageFile,
+                Price = product.Price,
+                Brand = product.Brand,
+                Type = product.Type,
+                CreatedDate = product.CreatedDate
+            };
+        }
+        public static Pagination<ProductResponse> ToResponse(this Pagination<Product> pagination)
+         => new Pagination<ProductResponse>(
+             pagination.PageIndex,
+             pagination.PageSize,
+             pagination.Count,
+             pagination.Data.Select(p => p.ToResponse()).ToList()
+             );
 
-    public static IMapper Mapper => Lazy.Value;
+        public static IList<ProductResponse> ToResponseList(this IEnumerable<Product> products) =>
+            products.Select(p => p.ToResponse()).ToList();
+
+        public static Product ToEntity(this CreateProductCommand command, ProductBrand brand, ProductType type) =>
+            new Product
+            { 
+                Name = command.Name,
+                Summary = command.Summary,
+                Description = command.Description,
+                ImageFile = command.ImageFile,
+                Brand = brand,
+                Type = type,
+                Price = command.Price,
+                CreatedDate = DateTimeOffset.UtcNow
+            };
+        public static Product ToUpdateEntity(this UpdateProductCommand command, Product existing, ProductBrand brand, ProductType type)
+        {
+            return new Product
+            {
+                Id = existing.Id,
+                Name = command.Name,
+                Summary = command.Summary,
+                ImageFile = command.ImageFile,
+                Brand = brand,
+                Type = type,
+                Price = command.Price,
+                CreatedDate = existing.CreatedDate
+            };
+        }
+
+        public static ProductDto ToDto(this ProductResponse product)
+        {
+            if (product == null) return null;
+            return new ProductDto
+                (
+                    product.Id,
+                    product.Name,
+                    product.Summary,
+                    product.Description,
+                    product.ImageFile,
+                    new BrandDto(product.Brand.Id, product.Brand.Name),
+                    new TypeDto(product.Type.Id, product.Type.Name),
+                    product.Price,
+                    DateTimeOffset.UtcNow
+                );
+        }
+
+        public static UpdateProductCommand ToCommand(this UpdateProductDto dto, string id)
+        {
+            return new UpdateProductCommand
+            {
+                Id = id,
+                Name = dto.Name,
+                Summary = dto.Summary,
+                Description = dto.Description,
+                ImageFile = dto.ImageFile,
+                Price = dto.Price,
+                BrandId = dto.BrandId,
+                TypeId = dto.TypeId
+            };
+        }
+
+    }
 }

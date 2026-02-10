@@ -14,12 +14,10 @@ public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, Produc
     {
         _productRepository = productRepository;
     }
-
     public async Task<ProductResponse> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
     {
         var product = await _productRepository.GetProduct(request.Id);
-        var productResponse = ProductMapper.Mapper.Map<ProductResponse>(product);
-
+        var productResponse = product.ToResponse();
         return productResponse;
     }
 }

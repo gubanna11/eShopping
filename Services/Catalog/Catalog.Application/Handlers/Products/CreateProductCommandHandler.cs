@@ -10,24 +10,31 @@ namespace Catalog.Application.Handlers.Products;
 public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductResponse>
 {
     private readonly IProductRepository _productRepository;
+    private readonly IBrandRepository _brandRepository;
+    private readonly ITypeRepository _typeRepository;
 
-    public CreateProductCommandHandler(IProductRepository productRepository)
+    public CreateProductCommandHandler(
+        IProductRepository productRepository,
+        IBrandRepository brandRepository,
+        ITypeRepository typeRepository)
     {
         _productRepository = productRepository;
+        _brandRepository = brandRepository;
+        _typeRepository = typeRepository;
     }
-
     public async Task<ProductResponse> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var productEntity = ProductMapper.Mapper.Map<Product>(request);
+        //Fetch Brand and Type from Repository
+        var brand = await _brandRepository.GetBrandByIdAsync(request.BrandId);
+        var type = await _typeRepository.GetTypeByIdAsync(request.TypeId);
 
-        if (productEntity is null)
+        if(brand == null || type == null)
         {
-            throw new ApplicationException("There is an issue with mapping while creating a new product");
+            throw new ApplicationException("Invalid Brand or Type Specified");
         }
-
+        //Match to Entity
+        var productEntity = request.ToEntity(brand, type);
         var newProduct = await _productRepository.CreateProduct(productEntity);
-
-        var productResponse = ProductMapper.Mapper.Map<ProductResponse>(newProduct);
-        return productResponse;
+        return newProduct.ToResponse();
     }
 }

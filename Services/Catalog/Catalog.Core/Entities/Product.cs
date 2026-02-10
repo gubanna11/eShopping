@@ -5,7 +5,6 @@ namespace Catalog.Core.Entities;
 
 public class Product : BaseEntity
 {
-    [BsonElement("Name")]
     public string Name { get; set; }
 
     public string Summary { get; set; }
@@ -14,12 +13,12 @@ public class Product : BaseEntity
 
     public string ImageFile { get; set; }
 
-    protected internal string fieldd;
+    public ProductBrand Brand { get; set; }
 
-    public ProductBrand Brands { get; set; }
-
-    public ProductType Types { get; set; }
+    public ProductType Type { get; set; }
 
     [BsonRepresentation(BsonType.Decimal128)]
     public decimal Price { get; set; }
+    
+    public DateTimeOffset CreatedDate { get; set; }
 }

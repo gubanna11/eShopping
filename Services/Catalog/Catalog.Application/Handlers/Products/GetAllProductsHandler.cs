@@ -15,12 +15,10 @@ public class GetAllProductsHandler : IRequestHandler<GetAllProductsQuery, Pagina
     {
         _productRepository = productRepository;
     }
-
     public async Task<Pagination<ProductResponse>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
     {
         var productList = await _productRepository.GetProducts(request.CatalogSpecParams);
-        var productResponseList = ProductMapper.Mapper.Map<Pagination<ProductResponse>>(productList);
-
+        var productResponseList = productList.ToResponse();
         return productResponseList;
     }
 }
