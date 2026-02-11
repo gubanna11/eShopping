@@ -14,12 +14,9 @@ public class GetAllBrandsHandler : IRequestHandler<GetAllBrandsQuery, IList<Bran
     {
         _brandRepository = brandRepository;
     }
-
     public async Task<IList<BrandResponse>> Handle(GetAllBrandsQuery request, CancellationToken cancellationToken)
     {
         var brandList = await _brandRepository.GetAllBrands();
-        var brandResponseList = ProductMapper.Mapper.Map<IList<BrandResponse>>(brandList);
-
-        return brandResponseList;
+        return brandList.ToResponseList();
     }
 }

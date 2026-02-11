@@ -9,23 +9,37 @@ namespace Catalog.Application.Handlers.Products;
 public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, bool>
 {
     private readonly IProductRepository _productRepository;
+    private readonly IBrandRepository _brandRepository;
+    private readonly ITypeRepository _typeRepository;
 
-    public UpdateProductCommandHandler(IProductRepository productRepository)
+    public UpdateProductCommandHandler(
+        IProductRepository productRepository,
+        IBrandRepository brandRepository,
+        ITypeRepository typeRepository)
     {
         _productRepository = productRepository;
+        _brandRepository = brandRepository;
+        _typeRepository = typeRepository;
     }
 
     public async Task<bool> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
-        var productEntity = ProductMapper.Mapper.Map<Product>(request);
-
-        if (productEntity is null)
+        var existing = await _productRepository.GetProduct(request.Id);
+        if (existing == null)
         {
-            throw new ApplicationException("There is an issue with mapping while creating a new product");
+            throw new KeyNotFoundException($"Product with Id {request.Id} not found");
         }
+        //Step 1: Fetch Brand and Type
+        var brand = await _brandRepository.GetBrandByIdAsync(request.BrandId);
+        var type = await _typeRepository.GetTypeByIdAsync(request.TypeId);
+        if (brand == null || type == null)
+        {
+            throw new ApplicationException("Invalid Brand or Type Specified");
+        }
+        //Step 2: Mapper Role
+        var updatedProduct = request.ToUpdateEntity(existing, brand, type);
 
-        var result = await _productRepository.UpdateProduct(productEntity);
-
-        return result;
+        //Step 3: Save the record
+        return await _productRepository.UpdateProduct(updatedProduct);
     }
 }
