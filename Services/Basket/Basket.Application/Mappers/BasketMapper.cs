@@ -1,19 +1,58 @@
-﻿using AutoMapper;
+﻿using Basket.Application.Commands;
+using Basket.Application.Responses;
+using Basket.Core.Entities;
 
-namespace Basket.Application.Mappers;
-
-public static class BasketMapper
+namespace Basket.Application.Mappers
 {
-    private static readonly Lazy<IMapper> Lazy = new Lazy<IMapper>(() =>
+    public static class BasketMapper
     {
-        var config = new MapperConfiguration(cfg =>
+        public static ShoppingCartResponse ToResponse(this ShoppingCart shoppingCart)
         {
-            cfg.ShouldMapProperty = p => p.GetMethod.IsPublic || p.GetMethod.IsAssembly;
-            cfg.AddProfile<BasketMappingProfile>();
-        });
-        var mapper = config.CreateMapper();
-        return mapper;
-    });
-    
-    public static IMapper Mapper => Lazy.Value;
+            return new ShoppingCartResponse
+            {
+                UserName = shoppingCart.UserName,
+                Items = [.. shoppingCart.Items.Select(item => new ShoppingCartItemResponse
+                {
+                    Quantity = item.Quantity,
+                    ImageFile = item.ImageFile,
+                    Price = item.Price,
+                    ProductId = item.ProductId,
+                    ProductName = item.ProductName
+                })]
+            };
+        }
+       
+        //Delegate Based Mapper
+        public static ShoppingCartResponse ToResponseUsingDelegate(this ShoppingCart cart)
+            => MapCart(cart);
+
+        public static readonly Func<ShoppingCart, ShoppingCartResponse> MapCart =
+            cart => new ShoppingCartResponse
+            {
+                UserName = cart.UserName,
+                Items = [.. cart.Items.Select(item => new ShoppingCartItemResponse
+                {
+                    Quantity = item.Quantity,
+                    ImageFile = item.ImageFile,
+                    Price = item.Price,
+                    ProductId = item.ProductId,
+                    ProductName = item.ProductName
+                })]
+            };
+        public static ShoppingCart ToEntity(this CreateShoppingCartCommand command)
+        {
+            return new ShoppingCart
+            {
+                UserName = command.UserName,
+                Items = command.Items.Select(item => new ShoppingCartItem
+                {
+                    Quantity = item.Quantity,
+                    ImageFile = item.ImageFile,
+                    Price = item.Price,
+                    ProductId = item.ProductId,
+                    ProductName = item.ProductName
+                }).ToList()
+            };
+        }
+    }
 }

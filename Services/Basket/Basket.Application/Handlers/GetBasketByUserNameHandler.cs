@@ -14,11 +14,17 @@ public class GetBasketByUserNameHandler : IRequestHandler<GetBasketByUserNameQue
     {
         _basketRepository = basketRepository;
     }
-    
+
     public async Task<ShoppingCartResponse> Handle(GetBasketByUserNameQuery request, CancellationToken cancellationToken)
     {
         var shoppingCart = await _basketRepository.GetBasket(request.UserName);
-        var shoppingCartResponse = BasketMapper.Mapper.Map<ShoppingCartResponse>(shoppingCart);
-        return shoppingCartResponse;
+        if (shoppingCart == null)
+        {
+            return new ShoppingCartResponse(request.UserName)
+            {
+                Items = new List<ShoppingCartItemResponse>()
+            };
+        }
+        return shoppingCart.ToResponse();
     }
 }
